@@ -1,6 +1,6 @@
 {
   "name": "brobbot-roll",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "brobbot plugin to roll dice",
   "main": "index.js",
   "scripts": {
