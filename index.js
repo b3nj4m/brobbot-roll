@@ -43,7 +43,7 @@ function getRandIntInclusive(low, hi) {
 
 
 module.exports = (robot) => {
-  robot.helpCommand("brobbot roll `dice`", "Roll `dice` and report the outcomes. E.g. `roll d20 2d6`");
+  robot.helpCommand("brobbot roll `dice`", "Roll `dice` and report the outcomes. E.g. `roll d20 + 4 2d6`");
   robot.helpCommand("brobbot skill-check `dc` `modifier`", "Roll a d20, add the modifier and report the outcome.");
 
 

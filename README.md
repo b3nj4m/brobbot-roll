@@ -6,7 +6,7 @@ A brobbot plugin for rolling dice.
 brobbot roll <dice>
 ```
 
-Roll dice and report the results. Dice should be a space-separated list of the format `ndm` where `n` is a number of dice and `m` is a size of dice.
+Roll dice and report the results. Dice should be a space-separated list of the format `ndm [+/- p]` where `n` is a number of dice, `m` is a size of dice and `p` is an optional integer modifier.
 
 ```
 brobbot skill-check <dc> <modifier>
