@@ -46,47 +46,64 @@ module.exports = (robot) => {
   robot.helpCommand("brobbot roll `dice`", "Roll `dice` and report the outcomes. E.g. `roll d20 2d6`");
   robot.helpCommand("brobbot skill-check `dc` `modifier`", "Roll a d20, add the modifier and report the outcome.");
 
-  robot.respond(/^roll\s+((([0-9]*d[0-9]+)\s*)+)/i, (msg) => {
-    const dice = msg.match[1];
+
+  robot.respond(/^roll\s+(.+)/i, (msg) => {
+    const dieRegex = /^([0-9]*d[0-9]+)\s*([+-]\s*[0-9]+)?\s*/i;
+    let dice = msg.match[1];
     if (dice) {
-      const results = dice.split(/\s+/).map(function(die) {
+      const results = [];
+      while (dieRegex.test(dice)) {
+        let [match, die, modifier] = dieRegex.exec(dice);
         let [num, size] = die.split('d');
-        num = num ? Math.abs(parseInt(num, 10)) : 1;
-        size = size ? Math.abs(parseInt(size, 10)) : 20;
-        let result = 0;
-        for (let i = 0; i < num; i++) {
-          result += getRandIntInclusive(1, size);
+        num = num ? Math.max(1, Math.min(Math.abs(parseInt(num, 10)), 100)) : 1;
+        size = size ? Math.max(2, Math.abs(parseInt(size, 10))) : 20;
+        modifier = modifier ? parseInt(modifier.replace(/\s+/g, ''), 10) : 0;
+
+        if (size && num) {
+          let result = modifier;
+          for (let i = 0; i < num; i++) {
+            result += getRandIntInclusive(1, size);
+          }
+
+          const op = modifier < 0 ? '-' : '+';
+          const roll = `${num}d${size}` + (modifier ? ` ${op} ${Math.abs(modifier)}` : '');
+          results.push(`${roll}: ${result}`);
         }
-        return `${die}: ${result}`;
-      });
+
+        dice = dice.replace(dieRegex, '');
+      }
       //TODO flavor text
-      msg.send(`Rolled ${results.join(', ')}`);
+      if (results.length > 0) {
+        return msg.send(`Rolled ${results.join(', ')}`);
+      }
     }
-    else {
-      msg.send('Wat.');
-    }
+    return msg.send('Wat.');
   });
 
-  robot.respond(/^skill-check(\s+([0-9]+)?\s+(-?[0-9]+)?)?/i, (msg) => {
-    const dc = parseInt(msg.match[2], 10) || 10;
-    const mod = parseInt(msg.match[3], 10) || 0;
-    const roll = getRandIntInclusive(1, 20);
-    const success = roll + mod >= dc;
-    const op = mod < 0 ? '-' : '+';
-    let text;
-    //TODO flavor text
-    if (roll === 1) {
-      text = 'Critical failure!';
+  robot.respond(/^skill-check\s*([^\s]+)?\s*([^\s]+)?/i, (msg) => {
+    let [match, dc, mod] = msg.match;
+    dc = dc ? parseInt(dc, 10) : 10;
+    mod = mod ? parseInt(mod, 10) : 0;
+    if (dc && (mod || mod === 0)) {
+      const roll = getRandIntInclusive(1, 20);
+      const success = roll + mod >= dc;
+      const op = mod < 0 ? '-' : '+';
+      let text;
+      //TODO flavor text
+      if (roll === 1) {
+        text = 'critical failure!';
+      }
+      else if (roll === 20) {
+        text = 'critical success!';
+      }
+      else if (success) {
+        text = 'you passed.';
+      }
+      else {
+        text = 'you failed.';
+      }
+      return msg.send(`DC ${dc} skill check: ${text} (${roll} ${op} ${Math.abs(mod)})`);
     }
-    else if (roll === 20) {
-      text = 'Critical success!';
-    }
-    else if (success) {
-      text = 'You passed.';
-    }
-    else {
-      text = 'You failed.';
-    }
-    msg.send(`${text} (${roll} ${op} ${Math.abs(mod)})`);
+    return msg.send('Wat.');
   });
 };
