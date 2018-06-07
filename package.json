@@ -1,0 +1,23 @@
+{
+  "name": "brobbot-roll",
+  "version": "1.0.0",
+  "description": "brobbot plugin to roll dice",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/b3nj4m/brobbot-roll.git"
+  },
+  "keywords": [
+    "brobbot",
+    "dice"
+  ],
+  "author": "Ben Robbins <ben.robbins@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/b3nj4m/brobbot-roll/issues"
+  },
+  "homepage": "https://github.com/b3nj4m/brobbot-roll#readme"
+}
